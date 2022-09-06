@@ -1,0 +1,71 @@
+{
+  "name": "@ttungbmt/mui-query-list",
+  "version": "0.0.1",
+  "description": "Query List for Material UI",
+  "keywords": [
+    "material",
+    "query",
+    "list"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/laragis/mui-query-list.git"
+  },
+  "author": "Truong Thanh Tung <ttungbmt@gmail.com>",
+  "sideEffects": false,
+  "exports": {
+    "require": "./dist/index.js",
+    "default": "./dist/index.modern.mjs"
+  },
+  "main": "dist/index.js",
+  "umd:main": "dist/index.umd.js",
+  "module": "dist/index.mjs",
+  "source": "src/index.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "size": "size-limit",
+    "clean": "rimraf dist",
+    "build": "microbundle --jsx React.createElement",
+    "watch": "microbundle watch --jsx React.createElement",
+    "prebuild": "npm run clean",
+    "preversion": "npm run build",
+    "postversion": "git push --follow-tags"
+  },
+  "dependencies": {
+    "@mui/lab": "5.0.0-alpha.97",
+    "@mui/material": "^5.10.3",
+    "axios": "^0.27.2",
+    "immer": "^9.0.15",
+    "jquery": "^3.6.1",
+    "lodash": "^4.17.21",
+    "numeral": "^2.0.6",
+    "prop-types": "15.8.1",
+    "react-intersection-observer": "^9.4.0",
+    "react-use": "^17.4.0",
+    "scroll-js": "^3.5.2",
+    "zustand": "^4.0.0-rc.1",
+    "zustand-store-addons": "^0.1.12"
+  },
+  "devDependencies": {
+    "@size-limit/preset-small-lib": "^8.0.1",
+    "microbundle": "^0.15.1",
+    "path": "^0.12.7",
+    "rimraf": "^3.0.2",
+    "size-limit": "^8.0.1"
+  },
+  "peerDependencies": {
+    "react": "^16.9.0 || ^17.0.0 || ^18",
+    "@tanstack/react-query": "^4.2.3"
+  },
+  "size-limit": [
+    {
+      "limit": "4 kB",
+      "path": "dist/index.js"
+    }
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}
