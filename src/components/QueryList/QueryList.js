@@ -42,7 +42,7 @@ QueryList.defaultProps = {
   perPage: 10,
   renderListItem: renderListItem,
   renderList: renderList,
-  backToTop: false
+  backToTop: false,
 }
 
 export default QueryList

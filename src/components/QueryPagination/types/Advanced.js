@@ -88,7 +88,7 @@ function Advanced({ meta, sizes, size }) {
 }
 
 Advanced.defaultProps = {
-  sizes: [10, 20, 50, 100, 200]
+  sizes: [10, 20, 50, 100, 200],
 }
 
 export default Advanced

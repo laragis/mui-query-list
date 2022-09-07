@@ -1,3 +1,4 @@
+import React from 'react'
 import { Pagination as MuiPagination } from '@mui/material'
 import { useStore } from '../../../context'
 
