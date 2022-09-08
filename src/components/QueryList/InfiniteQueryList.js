@@ -1,7 +1,7 @@
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { InView } from 'react-intersection-observer'
-import { has } from 'lodash'
-import React, { Fragment } from 'react'
+import { get, has, keys, omit } from 'lodash'
+import React, { forwardRef, Fragment, useEffect, useMemo } from 'react'
 import { INFINITE_LOADING } from '../../constants'
 import { Box, Button, LinearProgress, Stack } from '@mui/material'
 import { useInit } from '../../hooks'
@@ -9,11 +9,12 @@ import { useStore } from '../../context'
 import fetchData from '../../utils/fetchData'
 import QueryPagination from '../QueryPagination/QueryPagination'
 import { scrollTo } from 'scroll-js'
+import ListItem from '../../utils/renderListItem'
 
-function InfiniteQueryList(props) {
-  const { renderListItem: ListItem, renderList: List } = props
+const InfiniteQueryList = forwardRef((props, ref) => {
+  const { renderListItem: ListItem, renderList: List, wrapperListItem, onRowClicked } = props
 
-  const queryKey = useStore('queryKey')
+  const [queryKey, selected, setSelected] = useStore('queryKey, selected, setSelected')
 
   const queryInfo = useInfiniteQuery(queryKey, fetchData, {
     getPreviousPageParam: (firstPage, allPages) => {
@@ -54,10 +55,16 @@ function InfiniteQueryList(props) {
     })
   }
 
+  const firstRow = useMemo(() => get(data, 'pages.0.data.0'), [get(data, 'pages.0.data.0')])
+
+  useEffect(() => {
+    console.log(ref)
+  }, [])
+
   return (
     <div>
       {status === 'loading' ? (
-        <p>Loading...</p>
+        <LinearProgress className="w-full" color="primary" />
       ) : status === 'error' ? (
         <span>Error: {error.message}</span>
       ) : (
@@ -71,41 +78,56 @@ function InfiniteQueryList(props) {
               {isFetchingPreviousPage
                 ? 'Loading more...'
                 : hasPreviousPage
-                ? 'Load Older'
-                : 'Nothing more to load'}
+                  ? 'Load Older'
+                  : 'Nothing more to load'}
             </Button>
           )}
 
-          {data.pages?.map((page, pageIndex) => (
-            <Fragment key={pageIndex}>
-              {page.data.map((item, itemIndex) => {
-                let Component = List,
-                  serial = itemIndex + page.meta.from
+          <List meta={data?.meta} firstRow={firstRow} aaa={123}>
+            {data.pages?.map((page, pageIndex) => (
+              <Fragment key={pageIndex}>
+                {page.data.map((item, itemIndex) => {
+                  let serial = itemIndex + page.meta.from,
+                    hasInView = (
+                      props.pagination === INFINITE_LOADING &&
+                      props.threshold &&
+                      props.threshold > 0 &&
+                      props.threshold <= page.data.length &&
+                      page.data.length - props.threshold === itemIndex + 1
+                    ),
+                    onChange = (inView, entry) => handleNextPage(inView, entry, pageIndex),
+                    wrapperListItemProps = {
+                      key: itemIndex,
+                      component: hasInView ? InView : Box,
+                      onChange
+                    },
+                    listItemProps = {
+                      serial,
+                      data: item,
+                      meta: page.meta,
+                      onRowClicked: (e, data) => {
+                        let itemSelected = selected === serial ? false : serial
 
-                if (
-                  props.pagination === INFINITE_LOADING &&
-                  props.threshold &&
-                  props.threshold > 0 &&
-                  props.threshold <= page.data.length &&
-                  page.data.length - props.threshold === itemIndex + 1
-                ) {
-                  Component = InView
-                }
-
-                return (
-                  <Box
-                    key={itemIndex}
-                    component={Component}
-                    onChange={(inView, entry) =>
-                      handleNextPage(inView, entry, pageIndex)
+                        setSelected(itemSelected)
+                        onRowClicked(e, { item: data, selected: itemSelected })
+                      },
+                      selected: serial === selected,
+                      setSelected
                     }
-                  >
-                    <ListItem serial={serial} data={item} meta={page.meta} />
-                  </Box>
-                )
-              })}
-            </Fragment>
-          ))}
+
+                  if(!wrapperListItem) return <ListItem key={itemIndex} {...listItemProps} />
+
+                  return (
+                    <Box {...wrapperListItemProps}>
+                      <ListItem {...listItemProps} />
+                    </Box>
+                  )
+                })}
+              </Fragment>
+            ))}
+          </List>
+
+
 
           {props.backToTop && props.scrollPosition?.y > 400 && (
             <Button
@@ -130,13 +152,17 @@ function InfiniteQueryList(props) {
           {isFetching && !isFetchingNextPage ? (
             <Stack className="mt-6" alignItems="center" spacing={1}>
               <p className="font-semibold">Background Updating...</p>
-              <LinearProgress className="w-full" color="secondary" />
+              <LinearProgress className="w-full" color="primary" />
             </Stack>
           ) : null}
         </>
       )}
     </div>
   )
+})
+
+InfiniteQueryList.defaultProps = {
+  wrapperListItem: true
 }
 
 export default InfiniteQueryList

@@ -5,13 +5,10 @@ import { SIMPLE } from './constants'
 import produce from 'immer'
 import { get } from 'lodash'
 
-const initialState = {
-  pagination: SIMPLE,
-  queryKey: [],
-}
 
 export const createStore = () => create((set, get) => ({
-  ...initialState,
+  pagination: SIMPLE,
+  queryKey: [],
 
   init: (props) => {
     let queryKey = [
@@ -28,9 +25,13 @@ export const createStore = () => create((set, get) => ({
 
     set({
       queryKey,
-      pagination: props.pagination
+      pagination: props.pagination,
+      selected: false
     })
   },
+
+  selected: false,
+  setSelected: selected => set({selected}),
 
   setPage: (page) => set(
     produce((state) => {

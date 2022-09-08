@@ -1,4 +1,4 @@
-import React, {Fragment} from 'react'
+import React, { Fragment, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useStore } from '../../context'
 import { useInit } from '../../hooks'
@@ -7,11 +7,12 @@ import QueryPagination from '../QueryPagination/QueryPagination'
 import { Alert, LinearProgress, Stack } from '@mui/material'
 import { useUpdateEffect } from 'react-use'
 import $ from 'jquery'
+import { get } from 'lodash'
 
 function SimpleQueryList(props) {
-  const { renderListItem: ListItem, renderList: List } = props
+  const { renderListItem: ListItem, renderList: List, onRowClicked } = props
 
-  const queryKey = useStore('queryKey')
+  const [queryKey, selected, setSelected] = useStore('queryKey, selected, setSelected')
 
   const queryInfo = useQuery(queryKey, fetchData, {
     keepPreviousData: true,
@@ -26,6 +27,8 @@ function SimpleQueryList(props) {
     $(props.scrollTarget || window).scrollTop(0)
   }, [data])
 
+  const firstRow = useMemo(() => get(data, 'data.0'), [get(data, 'data.0')])
+
   return (
     <Stack spacing={1.5}>
       {isLoading && <LinearProgress />}
@@ -37,16 +40,22 @@ function SimpleQueryList(props) {
 
       {isSuccess && (
         <>
-          <List meta={data?.meta}>
-            {data?.data?.map((item, k) => {
-              return (
-                <ListItem
-                  key={k}
-                  serial={data.meta.from + k}
-                  data={item}
-                  meta={data?.meta}
-                />
-              )
+          <List meta={data?.meta} firstRow={firstRow}>
+            {data?.data?.map((item, key) => {
+              let serial = data.meta.from + key,
+                  listItemProps = {
+                  key,
+                  serial: data.meta.from + key,
+                  data: item,
+                  meta: data?.meta,
+                  onRowClicked: (e, data) => {
+                    let itemSelected = selected === serial ? false : serial
+                    setSelected(itemSelected)
+                    onRowClicked(e, { item, selected: itemSelected })
+                  },
+              }
+
+              return <ListItem {...listItemProps}/>
             })}
           </List>
           {isFetching && <LinearProgress />}

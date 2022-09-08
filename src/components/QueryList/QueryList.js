@@ -1,27 +1,32 @@
 import { includes } from 'lodash'
 import { INFINITE_LOADING, LOAD_MORE, SIMPLE } from '../../constants'
-import React from 'react'
+import React, { forwardRef, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import InfiniteQueryList from './InfiniteQueryList'
 import SimpleQueryList from './SimpleQueryList'
 import { createStore, Provider } from '../../context'
+import { useScrollList } from '../../hooks'
 import renderListItem from '../../utils/renderListItem'
 import renderList from '../../utils/renderList'
-import { useScrollList } from '../../hooks'
 
-function QueryList(props) {
+const QueryList = forwardRef((props, ref) => {
   const scrollPosition = useScrollList(props)
+
+  const queryListProps = {
+    ...props,
+    scrollPosition
+  }
 
   return (
     <Provider createStore={createStore}>
       {includes([LOAD_MORE, INFINITE_LOADING], props.pagination) ? (
-        <InfiniteQueryList {...props} scrollPosition={scrollPosition} />
+        <InfiniteQueryList ref={ref} {...queryListProps} />
       ) : (
-        <SimpleQueryList {...props} scrollPosition={scrollPosition} />
+        <SimpleQueryList ref={ref} {...queryListProps} />
       )}
     </Provider>
   )
-}
+})
 
 QueryList.propTypes = {
   queryKey: PropTypes.string,
@@ -43,6 +48,7 @@ QueryList.defaultProps = {
   renderListItem: renderListItem,
   renderList: renderList,
   backToTop: false,
+  onRowClicked: () => {}
 }
 
 export default QueryList
