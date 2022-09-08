@@ -58,7 +58,7 @@ const InfiniteQueryList = forwardRef((props, ref) => {
   const firstRow = useMemo(() => get(data, 'pages.0.data.0'), [get(data, 'pages.0.data.0')])
 
   useEffect(() => {
-    console.log(ref)
+    // console.log(ref)
   }, [])
 
   return (
