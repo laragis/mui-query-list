@@ -14,15 +14,13 @@ export const createStore = () => create((set, get) => ({
       props.queryKey,
       {
         url: props.url,
-        // pagination: props.pagination,
-        // params: {
-        //   page: props.page > 0 ? props.page : 1,
-        //   perPage: props.perPage > 0 ? props.perPage : 20,
-        // }
+        pagination: props.pagination,
+        params: {
+          page: props.page > 0 ? props.page : 1,
+          perPage: props.perPage > 0 ? props.perPage : 20,
+        }
       }
     ]
-
-    console.log(queryKey)
 
     set({
       queryKey,
