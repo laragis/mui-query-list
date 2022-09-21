@@ -6,22 +6,24 @@ const fetchData = async ({ meta, pageParam, queryKey, signal }) => {
 
   const request = isString(url)
     ? {
-        method: 'get',
-        ...params,
-      }
+      method: 'get',
+      url,
+      ...params
+    }
     : {
-        params: {
-          ...params,
-          ...url?.params,
-        },
-        ...url,
-      }
+      params: {
+        ...params,
+        ...url?.params
+      },
+      ...url
+    }
 
   if (!isUndefined(pageParam)) request.params.page = pageParam
 
+
   const response = await axios({
     signal,
-    ...request,
+    ...request
   })
 
   return response.data

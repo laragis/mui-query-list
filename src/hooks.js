@@ -2,7 +2,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useStore } from './context'
 import { useCallback, useEffect, useRef } from 'react'
 import { debounce, isEmpty } from 'lodash'
-import { useDeepCompareEffect, useRafState } from 'react-use'
+import { useRafState } from 'react-use'
 import $ from 'jquery'
 
 export const useInit = (props) => {
@@ -10,11 +10,11 @@ export const useInit = (props) => {
 
   const [queryKey, init] = useStore('queryKey, init')
 
-  useDeepCompareEffect(() => {
+  useEffect(() => {
     !isEmpty(queryKey) && queryClient.cancelQueries(queryKey)
 
     init(props)
-  }, [props.queryKey, props.url, props.page, props.perPage])
+  }, [JSON.stringify(props.queryKey), props.url, props.page, props.perPage])
 }
 
 export const useScrollList = ({scrollTarget, scrollIndex, scrollTop, wait = 300}) => {

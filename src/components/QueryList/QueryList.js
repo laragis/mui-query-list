@@ -29,7 +29,7 @@ const QueryList = forwardRef((props, ref) => {
 })
 
 QueryList.propTypes = {
-  queryKey: PropTypes.string,
+  queryKey: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
   url: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
   pagination: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
   page: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
