@@ -3,7 +3,7 @@ import createContext from 'zustand/context'
 import shallow from 'zustand/shallow'
 import { SIMPLE } from './constants'
 import produce from 'immer'
-import { get } from 'lodash'
+import { castArray, get } from 'lodash'
 
 export const createStore = () => create((set, get) => ({
   pagination: SIMPLE,
@@ -11,11 +11,12 @@ export const createStore = () => create((set, get) => ({
 
   init: (props) => {
     let queryKey = [
-      props.queryKey,
+      castArray(props.queryKey)[0],
       {
         url: props.url,
         pagination: props.pagination,
         params: {
+          ...castArray(props.queryKey)[1],
           page: props.page > 0 ? props.page : 1,
           perPage: props.perPage > 0 ? props.perPage : 20,
         }

@@ -1,6 +1,6 @@
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { InView } from 'react-intersection-observer'
-import { get, has } from 'lodash'
+import { get, has, last } from 'lodash'
 import React, { forwardRef, Fragment, useEffect, useMemo } from 'react'
 import { INFINITE_LOADING } from '../../constants'
 import { Box, Button, LinearProgress, Stack } from '@mui/material'
@@ -56,10 +56,11 @@ const InfiniteQueryList = forwardRef((props, ref) => {
   }
 
   const firstRow = useMemo(() => get(data, 'pages.0.data.0'), [get(data, 'pages.0.data.0')])
+  const lastPage = last(data?.pages || [])
 
-  useEffect(() => {
-    // console.log(ref)
-  }, [])
+  const meta = useMemo(() => ({
+    ...get(lastPage, 'meta')
+  }), [lastPage])
 
   return (
     <div>
@@ -83,7 +84,7 @@ const InfiniteQueryList = forwardRef((props, ref) => {
             </Button>
           )}
 
-          <List meta={data?.meta} firstRow={firstRow} aaa={123}>
+          <List meta={meta} firstRow={firstRow}>
             {data.pages?.map((page, pageIndex) => (
               <Fragment key={pageIndex}>
                 {page.data.map((item, itemIndex) => {

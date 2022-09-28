@@ -8,7 +8,7 @@ const fetchData = async ({ meta, pageParam, queryKey, signal }) => {
     ? {
       method: 'get',
       url,
-      ...params
+      params
     }
     : {
       params: {
@@ -19,7 +19,6 @@ const fetchData = async ({ meta, pageParam, queryKey, signal }) => {
     }
 
   if (!isUndefined(pageParam)) request.params.page = pageParam
-
 
   const response = await axios({
     signal,

@@ -7,7 +7,7 @@ function InfiniteLoading({ queryInfo, data, threshold }) {
 
   const handleNextPage = (inView) => inView && hasNextPage && fetchNextPage()
 
-  if (!hasNextPage) return 'Nothing more to load'
+  if (!hasNextPage) return ''
 
   if (isFetchingNextPage)
     return <LinearProgress className="w-full mt-12" color="secondary" />
